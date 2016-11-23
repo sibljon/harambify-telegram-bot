@@ -7,15 +7,13 @@ A Telegram Bot to remember Harambe through replacing faces with his own.
 
 ## Creating a new bot in Telegram
 
-You do this by messaging @BotFather
-
-_TODO: add more details_
+You do this by messaging @BotFather in the Telegram app itself.
 
 ## Deploying to AWS Lambda
 
 ### Creating your bot's AWS Lambda function
 
-_TODO: add more details_
+See [AWS Lambda Initial Setup](docs/AWS_LAMBDA_INITIAL_SETUP.md)
 
 ### Deploying the app
 
