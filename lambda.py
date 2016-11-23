@@ -54,16 +54,39 @@ def harambify(img_file):
     for (x, y, w, h) in faces:
         # Resize the harambe according to the face. Maintain harambe_img_ratio ratio of width:height
         harambe_height = int(round(w / harambe_img_ratio * harambe_scale_adjustment))
-        harambe_y_offset = int(abs(harambe_height - h) / 2)
+        harambe_y_offset = int(round((harambe_height - h) / 2))
         harambe_width = int(round(w * harambe_scale_adjustment))
-        harambe_x_offset = int(abs(harambe_width - w) / 2)
+        harambe_x_offset = int(round((harambe_width - w) / 2))
         harambe_res = cv2.resize(img_harambe, (harambe_width, harambe_height))
+
+        # print(harambe_res)
+
+        (h, w) = harambe_res.shape[:2]
+        print(h)
+        print(w)
+        print("")
+
+        # TODO: bound the Harambe replacement rectangle to the dimensions of the photo -- it's unclear what will happen if a face is detected at the edge of a photo, but likely the app will crash.
 
         # Copy the resided harambe over the face keeping the alpha channel
         for c in range(0, 3):
-            img[y-harambe_y_offset:y+harambe_height-harambe_y_offset, x-harambe_x_offset:x+harambe_width-harambe_x_offset, c] = harambe_res[:, :, c] * \
+            harambe_y1 = y - harambe_y_offset
+            harambe_y2 = harambe_y1 + harambe_height
+            harambe_x1 = x - harambe_x_offset
+            harambe_x2 = harambe_x1 + harambe_width
+            print(harambe_height)
+            print(harambe_width)
+            print("")
+            print(harambe_y_offset)
+            print(harambe_x_offset)
+            print("")
+            print(harambe_y1)
+            print(harambe_y2)
+            print(harambe_x1)
+            print(harambe_x2)
+            img[harambe_y1:harambe_y2, harambe_x1:harambe_x2, c] = harambe_res[:, :, c] * \
                                    (harambe_res[:, :, 3] / 255.0) + \
-                                   img[y-harambe_y_offset:y+harambe_height-harambe_y_offset, x-harambe_x_offset:x+harambe_width-harambe_x_offset, c] * \
+                                   img[harambe_y1:harambe_y2, harambe_x1:harambe_x2, c] * \
                                    (1.0 - (harambe_res[:, :, 3] / 255.0))
 
     # Write the file if there is at least one face
@@ -99,7 +122,7 @@ def handle_photo(m):
         logger.info("No f_id -- that's odd!")
         return
 
-    logger.info("Photos found in message: party time?")
+    logger.info("Photo(s) found in message: party time?")
 
     # Download and write the file
     f_info = bot.get_file(f_id)
