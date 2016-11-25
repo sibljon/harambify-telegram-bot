@@ -33,7 +33,7 @@ cc_flags = cv2.CASCADE_SCALE_IMAGE | cv2.CASCADE_DO_ROUGH_SEARCH
 
 # harambify magic happens here
 def harambify(img_file):
-    # Initialize the classifier with the frontal face haar cascades
+    # Initialize the classifier with the frontal face haar cascades (https://github.com/opencv/opencv/blob/master/data/haarcascades/haarcascade_frontalface_default.xml)
     face_cc = cv2.CascadeClassifier(('cascade.xml'))
 
     # Read image
