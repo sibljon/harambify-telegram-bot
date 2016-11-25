@@ -59,12 +59,18 @@ def harambify(img_file):
         harambe_x_offset = int(round((harambe_width - w) / 2))
         harambe_res = cv2.resize(img_harambe, (harambe_width, harambe_height))
 
-        # print(harambe_res)
+        # print("current_face.y: {}".format(y))
+        # print("current_face.x: {}".format(x))
+        # print("current_face.h: {}".format(h))
+        # print("current_face.w: {}".format(w))
 
-        (h, w) = harambe_res.shape[:2]
-        print(h)
-        print(w)
-        print("")
+        (harambe_res_h, harambe_res_w) = harambe_res.shape[:2]
+        # print("harambe_res.h: {}".format(harambe_res_h))
+        # print("harambe_res.w: {}".format(harambe_res_w))
+
+        (img_h, img_w) = img.shape[:2]
+        # print("img.h: {}".format(img_h))
+        # print("img.w: {}".format(img_w))
 
         # TODO: bound the Harambe replacement rectangle to the dimensions of the photo -- it's unclear what will happen if a face is detected at the edge of a photo, but likely the app will crash.
 
@@ -74,20 +80,38 @@ def harambify(img_file):
             harambe_y2 = harambe_y1 + harambe_height
             harambe_x1 = x - harambe_x_offset
             harambe_x2 = harambe_x1 + harambe_width
-            print(harambe_height)
-            print(harambe_width)
-            print("")
-            print(harambe_y_offset)
-            print(harambe_x_offset)
-            print("")
-            print(harambe_y1)
-            print(harambe_y2)
-            print(harambe_x1)
-            print(harambe_x2)
-            img[harambe_y1:harambe_y2, harambe_x1:harambe_x2, c] = harambe_res[:, :, c] * \
-                                   (harambe_res[:, :, 3] / 255.0) + \
+
+            harambe_clip_top = 0
+            if harambe_y1 < 0:
+              harambe_clip_top = abs(harambe_y1)
+            harambe_clip_bottom = 0
+            if harambe_y2 > img_h:
+              harambe_clip_bottom = abs(harambe_y1 + harambe_height - img_h)
+            harambe_clip_left = 0
+            if harambe_x1 < 0:
+              harambe_clip_left = abs(harambe_x1)
+            harambe_clip_right = 0
+            if harambe_x2 > img_w:
+              harambe_clip_right = abs(harambe_x1 + harambe_width - img_w)
+
+            harambe_y1 = max(harambe_y1, 0)
+            harambe_y2 = min(harambe_y2, img_h)
+            harambe_x1 = max(harambe_x1, 0)
+            harambe_x2 = min(harambe_x2, img_w)
+
+            # print("harambe_height: {}".format(harambe_height))
+            # print("harambe_width: {}".format(harambe_width))
+            # print("harambe_y_offset: {}".format(harambe_y_offset))
+            # print("harambe_x_offset: {}".format(harambe_x_offset))
+            # print("harambe_y1: {}".format(harambe_y1))
+            # print("harambe_y2: {}".format(harambe_y2))
+            # print("harambe_x1: {}".format(harambe_x1))
+            # print("harambe_x2: {}".format(harambe_x2))
+
+            img[harambe_y1:harambe_y2, harambe_x1:harambe_x2, c] = harambe_res[harambe_clip_top:harambe_height-harambe_clip_bottom, harambe_clip_left:harambe_width-harambe_clip_right, c] * \
+                                   (harambe_res[harambe_clip_top:harambe_height-harambe_clip_bottom, harambe_clip_left:harambe_width-harambe_clip_right, 3] / 255.0) + \
                                    img[harambe_y1:harambe_y2, harambe_x1:harambe_x2, c] * \
-                                   (1.0 - (harambe_res[:, :, 3] / 255.0))
+                                   (1.0 - (harambe_res[harambe_clip_top:harambe_height-harambe_clip_bottom, harambe_clip_left:harambe_width-harambe_clip_right, 3] / 255.0))
 
     # Write the file if there is at least one face
     n_faces = len(faces)
@@ -182,17 +206,6 @@ def handle_start_help(m):
 def lambda_handler(event, context):
 
   logger.info("lambda_handler triggered")
-
-  # logger.info("sometging")
-  # bot.process
-
-  # pp = pprint.PrettyPrinter(indent=4)
-  # pp.pprint(event)
-
-  # logger.info('got event{}'.format(event))
-  # logger.error('something went wrong')
-
-  # dumpclean(event)
 
   if "body" in event:
     logger.info(event["body"])
