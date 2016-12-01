@@ -167,10 +167,15 @@ def handle_photo(m):
         bot.send_chat_action(cid, 'upload_photo')
 
         # Upload the photo and do it as a reply
+        caption=''
+        if n_faces > 1:
+          caption='%i glorious people have honored Harambe' % n_faces
+        else:
+          caption='A devoted servant has honored Harambe'
+            
         bot.send_photo(cid,
-                       open(filepath+img_ext, 'rb'),
-                       caption='%i people have honored Harambe' % n_faces)
-
+                       open(filepath+img_ext, 'rb'), caption)
+                                       
         try:
             os.unlink(filepath+img_ext)
         except:  # You shouldn't do this never but... *effort*
